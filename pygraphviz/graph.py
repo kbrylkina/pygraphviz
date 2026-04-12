@@ -1,3 +1,7 @@
+"""
+Graph data structures: Node, Edge, Graph.
+"""
+
 class Node:
     def __init__(self, node_id, label=None, **attrs):
         self.id = node_id

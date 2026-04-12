@@ -1,3 +1,6 @@
+"""
+Graph layout algorithms: circular, force-directed (Fruchterman-Reingold), hierarchical.
+"""
 import math
 import random
 

@@ -8,7 +8,6 @@ PyGraphViz — библиотека для визуализации графов
 import sys
 import os
 
-# Добавляем корень проекта в PYTHONPATH
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from pygraphviz import (
@@ -32,7 +31,6 @@ def demo_cities():
     print("=" * 60)
 
     g = Graph(directed=False)
-    # Реальные расстояния по автодорогам (км)
     g.add_edge("Москва", "Казань", weight=815)
     g.add_edge("Москва", "Самара", weight=1065)
     g.add_edge("Москва", "Пермь", weight=1440)
@@ -303,13 +301,11 @@ def demo_io():
     g.add_edge("B", "C", weight=5)
     g.add_edge("A", "C", weight=1)
 
-    # JSON
     json_str = to_json(g)
     print(f"   JSON:\n{json_str[:200]}...")
     g2 = from_json(json_str)
     print(f"   Восстановлено из JSON: {g2.node_count()} узлов, {g2.edge_count()} рёбер")
 
-    # Матрица смежности
     matrix, ids = to_adjacency_matrix(g)
     print(f"   Матрица смежности ({len(ids)}x{len(ids)}):")
     header = "     " + "  ".join(f"{nid:>5}" for nid in ids)
@@ -319,12 +315,10 @@ def demo_io():
         print(f"   {ids[i]:>3}  {vals}")
 
 
-# ══════════════════════════════════════════════════════════════════════
 
 if __name__ == "__main__":
     print()
     print("  PyGraphViz v0.1.0 — библиотека для визуализации графов")
-    print("  " + "=" * 56)
     print()
 
     demo_cities()
@@ -338,7 +332,4 @@ if __name__ == "__main__":
     demo_coloring()
     demo_io()
 
-    print("\n" + "=" * 60)
-    print(f"Готово! Визуализации сохранены в папку: {OUT}")
-    print(f"Всего изображений: {len([f for f in os.listdir(OUT) if f.endswith('.png')])}")
-    print("=" * 60)
+    print(f"Визуализации сохранены в папку: {OUT}")

@@ -2,7 +2,6 @@
 Utility functions to generate common graph types.
 """
 import random
-import math
 from .graph import Graph
 
 

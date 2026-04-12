@@ -1,6 +1,8 @@
+"""
+Graph rendering via matplotlib.
+"""
 import math
 import matplotlib.pyplot as plt
-import numpy as np
 
 from .layout import circular_layout, force_directed_layout, hierarchical_layout
 
