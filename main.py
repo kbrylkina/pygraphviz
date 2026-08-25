@@ -205,11 +205,13 @@ def demo_shortest_path():
 
     colors = {nid: "#E74C3C" if nid in path else "#BDC3C7"
               for nid in [n.id for n in g.nodes()]}
+    path_edges = {(path[i], path[i + 1]): "#E74C3C" for i in range(len(path) - 1)}
 
     Renderer(g).draw(
         layout="force",
         title=f"Кратчайший путь A -> F (Dijkstra, d={dist})",
         node_color=colors,
+        edge_color=path_edges,
         show_weights=True,
         node_size=1000,
         save_path=os.path.join(OUT, "07_shortest_path.png"),
@@ -224,9 +226,9 @@ def demo_mst():
 
     g = Graph(directed=False)
     edges = [
-        ("A", "B", 4), ("A", "C", 2), ("B", "C", 5), ("B", "D", 10),
-        ("C", "D", 3), ("C", "E", 8), ("D", "E", 7), ("D", "F", 6),
-        ("E", "F", 1),
+        ("A", "B", 4), ("A", "C", 2), ("A", "F", 9), ("B", "C", 5),
+        ("B", "D", 10), ("C", "D", 3), ("C", "F", 8), ("D", "E", 5),
+        ("D", "F", 6), ("E", "F", 2),
     ]
     for s, t, w in edges:
         g.add_edge(s, t, weight=w)
@@ -245,14 +247,37 @@ def demo_mst():
         mst_nodes.add(e.source)
         mst_nodes.add(e.target)
     colors = {nid: "#27AE60" for nid in mst_nodes}
+    mst_edge_colors = {(e.source, e.target): "#27AE60" for e in mst_k}
 
     Renderer(g).draw(
         layout="force",
         title=f"Минимальное остовное дерево (Kruskal, вес={total_k})",
         node_color=colors,
+        edge_color=mst_edge_colors,
         show_weights=True,
         node_size=1200,
+        seed=15,
         save_path=os.path.join(OUT, "08_mst.png"),
+    )
+
+    Renderer(g).draw_html(
+        os.path.join(OUT, "08_mst_interactive.html"),
+        layout="force",
+        title=f"Интерактивное MST (Kruskal, вес={total_k})",
+        node_color=colors,
+        edge_color=mst_edge_colors,
+        show_weights=True,
+        seed=15,
+    )
+
+    Renderer(g).draw_svg(
+        os.path.join(OUT, "08_mst.svg"),
+        layout="force",
+        title=f"MST (Kruskal, вес={total_k})",
+        node_color=colors,
+        edge_color=mst_edge_colors,
+        show_weights=True,
+        seed=15,
     )
 
 

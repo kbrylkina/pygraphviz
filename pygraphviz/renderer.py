@@ -5,6 +5,7 @@ import math
 import matplotlib.pyplot as plt
 
 from .layout import circular_layout, force_directed_layout, hierarchical_layout
+from .io import save_html, save_svg
 
 LAYOUTS = {
     "circular": circular_layout,
@@ -47,8 +48,8 @@ class Renderer:
             Single hex color or dict mapping node_id -> color.
         node_size : int
             Size of node markers.
-        edge_color : str
-            Color for edges.
+        edge_color : str | dict
+            Single color or dict mapping (source, target) -> color.
         font_size : int
             Font size for node labels.
         show_weights : bool
@@ -106,6 +107,57 @@ class Renderer:
 
         return fig, ax
 
+    def draw_html(
+        self,
+        path,
+        layout="force",
+        title="Interactive graph",
+        node_color=DEFAULT_NODE_COLOR,
+        edge_color=DEFAULT_EDGE_COLOR,
+        show_weights=False,
+        show_edge_labels=False,
+        **layout_kwargs,
+    ):
+        """
+        Save the graph as a standalone interactive HTML file.
+        """
+        save_html(
+            self.graph,
+            path,
+            layout=layout,
+            title=title,
+            node_color=node_color,
+            edge_color=edge_color,
+            show_weights=show_weights,
+            show_edge_labels=show_edge_labels,
+            **layout_kwargs,
+        )
+        print(f"Saved interactive HTML to {path}")
+
+    def draw_svg(
+        self,
+        path,
+        layout="force",
+        title="Graph",
+        node_color=DEFAULT_NODE_COLOR,
+        edge_color=DEFAULT_EDGE_COLOR,
+        show_weights=False,
+        show_edge_labels=False,
+        **layout_kwargs,
+    ):
+        """Save the graph as a standalone static SVG file (vector, without matplotlib)."""
+        save_svg(
+            self.graph,
+            path,
+            layout=layout,
+            title=title,
+            node_color=node_color,
+            edge_color=edge_color,
+            show_weights=show_weights,
+            show_edge_labels=show_edge_labels,
+            **layout_kwargs,
+        )
+        print(f"Saved SVG to {path}")
 
     def _draw_edges(self, ax, positions, edge_color, show_weights, show_edge_labels):
         node_radius = 0.12  # approximate visual radius to shorten arrow endpoints
@@ -113,6 +165,7 @@ class Renderer:
         for edge in self.graph.edges():
             x1, y1 = positions[edge.source]
             x2, y2 = positions[edge.target]
+            color = self._edge_color(edge_color, edge)
 
             if self.graph.directed:
                 dx, dy = x2 - x1, y2 - y1
@@ -126,8 +179,8 @@ class Renderer:
                     xytext=(x1, y1),
                     arrowprops=dict(
                         arrowstyle="-|>",
-                        color=edge_color,
-                        lw=1.5,
+                        color=color,
+                        lw=2.4 if color != DEFAULT_EDGE_COLOR else 1.5,
                         mutation_scale=16,
                     ),
                     zorder=2,
@@ -135,8 +188,8 @@ class Renderer:
             else:
                 ax.plot(
                     [x1, x2], [y1, y2],
-                    color=edge_color,
-                    linewidth=1.5,
+                    color=color,
+                    linewidth=2.6 if color != DEFAULT_EDGE_COLOR else 1.5,
                     zorder=1,
                 )
 
@@ -204,3 +257,14 @@ class Renderer:
                 color="white",
                 zorder=5,
             )
+
+    def _edge_color(self, edge_color, edge):
+        if not isinstance(edge_color, dict):
+            return edge_color
+        key = (edge.source, edge.target)
+        if key in edge_color:
+            return edge_color[key]
+        reverse_key = (edge.target, edge.source)
+        if not self.graph.directed and reverse_key in edge_color:
+            return edge_color[reverse_key]
+        return DEFAULT_EDGE_COLOR

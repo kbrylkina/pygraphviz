@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Интерактивное MST (Kruskal, вес=16.0)</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: #24313a;
+      background: #f6f8fa;
+    }
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      padding: 10px 12px;
+      border-bottom: 1px solid #d8e0e4;
+      background: #ffffff;
+    }
+    .toolbar strong { margin-right: auto; }
+    button {
+      border: 1px solid #c8d1d7;
+      background: #ffffff;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    svg {
+      display: block;
+      width: 100vw;
+      height: calc(100vh - 48px);
+      background: #ffffff;
+      cursor: grab;
+    }
+    svg.dragging { cursor: grabbing; }
+    .edge { stroke: var(--edge-color); stroke-width: 1.8; }
+    .node { stroke: #ffffff; stroke-width: 2.5; cursor: move; }
+    .node-label {
+      fill: #ffffff;
+      font-size: 12px;
+      font-weight: 700;
+      pointer-events: none;
+      text-anchor: middle;
+      dominant-baseline: central;
+    }
+    .edge-label {
+      fill: #24313a;
+      font-size: 12px;
+      paint-order: stroke;
+      stroke: #ffffff;
+      stroke-width: 4px;
+      stroke-linejoin: round;
+      text-anchor: middle;
+      dominant-baseline: central;
+    }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <strong>Интерактивное MST (Kruskal, вес=16.0)</strong>
+    <button id="fit">Fit</button>
+    <button id="labels">Labels</button>
+    <button id="edgeLabels">Edge labels</button>
+  </div>
+  <svg id="graph" viewBox="0 0 960 640" role="img" aria-label="Интерактивное MST (Kruskal, вес=16.0)">
+    <defs>
+      <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+        <path d="M0,0 L0,6 L9,3 z" fill="#888888"></path>
+      </marker>
+    </defs>
+    <g id="viewport"></g>
+  </svg>
+  <script>
+    const data = {"directed": false, "nodes": [{"id": "\"A\"", "label": "A", "x": 0.4067655586853559, "y": 0.3453127373791489, "color": "#27AE60"}, {"id": "\"B\"", "label": "B", "x": 0.5607650287282303, "y": -0.13965674924218058, "color": "#27AE60"}, {"id": "\"C\"", "label": "C", "x": 0.26917043320070044, "y": 0.0346845423941012, "color": "#27AE60"}, {"id": "\"F\"", "label": "F", "x": -0.11328154278750432, "y": 0.13821587857312637, "color": "#27AE60"}, {"id": "\"D\"", "label": "D", "x": 0.016511285280690114, "y": -0.27052293867852045, "color": "#27AE60"}, {"id": "\"E\"", "label": "E", "x": -0.4806119200716313, "y": -0.20340483878815244, "color": "#27AE60"}], "edges": [{"source": "\"A\"", "target": "\"B\"", "weight": 4, "label": "4", "color": "#27AE60", "width": 3.0}, {"source": "\"A\"", "target": "\"C\"", "weight": 2, "label": "2", "color": "#27AE60", "width": 3.0}, {"source": "\"A\"", "target": "\"F\"", "weight": 9, "label": "9", "color": "#888888", "width": 1.8}, {"source": "\"B\"", "target": "\"C\"", "weight": 5, "label": "5", "color": "#888888", "width": 1.8}, {"source": "\"B\"", "target": "\"D\"", "weight": 10, "label": "10", "color": "#888888", "width": 1.8}, {"source": "\"C\"", "target": "\"D\"", "weight": 3, "label": "3", "color": "#27AE60", "width": 3.0}, {"source": "\"C\"", "target": "\"F\"", "weight": 8, "label": "8", "color": "#888888", "width": 1.8}, {"source": "\"D\"", "target": "\"E\"", "weight": 5, "label": "5", "color": "#27AE60", "width": 3.0}, {"source": "\"D\"", "target": "\"F\"", "weight": 6, "label": "6", "color": "#888888", "width": 1.8}, {"source": "\"E\"", "target": "\"F\"", "weight": 2, "label": "2", "color": "#27AE60", "width": 3.0}], "edgeColor": "#888888", "title": "Интерактивное MST (Kruskal, вес=16.0)"};
+    const svg = document.getElementById("graph");
+    const viewport = document.getElementById("viewport");
+    const state = { scale: 1, tx: 0, ty: 0, labels: true, edgeLabels: true };
+    const nodeMap = new Map(data.nodes.map(n => [n.id, n]));
+
+    normalizePositions();
+    render();
+    fit();
+
+    document.getElementById("fit").onclick = fit;
+    document.getElementById("labels").onclick = () => {
+      state.labels = !state.labels;
+      viewport.querySelectorAll(".node-label").forEach(el => el.classList.toggle("hidden", !state.labels));
+    };
+    document.getElementById("edgeLabels").onclick = () => {
+      state.edgeLabels = !state.edgeLabels;
+      viewport.querySelectorAll(".edge-label").forEach(el => el.classList.toggle("hidden", !state.edgeLabels));
+    };
+
+    let pan = null;
+    svg.addEventListener("pointerdown", event => {
+      if (event.target.classList.contains("node")) return;
+      pan = { x: event.clientX, y: event.clientY, tx: state.tx, ty: state.ty };
+      svg.classList.add("dragging");
+      svg.setPointerCapture(event.pointerId);
+    });
+    svg.addEventListener("pointermove", event => {
+      if (!pan) return;
+      state.tx = pan.tx + event.clientX - pan.x;
+      state.ty = pan.ty + event.clientY - pan.y;
+      applyTransform();
+    });
+    svg.addEventListener("pointerup", event => {
+      pan = null;
+      svg.classList.remove("dragging");
+      svg.releasePointerCapture(event.pointerId);
+    });
+    svg.addEventListener("wheel", event => {
+      event.preventDefault();
+      const factor = event.deltaY < 0 ? 1.12 : 0.89;
+      const before = screenToWorld(event.clientX, event.clientY);
+      state.scale *= factor;
+      const after = worldToScreen(before.x, before.y);
+      state.tx += event.clientX - after.x;
+      state.ty += event.clientY - after.y;
+      applyTransform();
+    }, { passive: false });
+
+    function normalizePositions() {
+      if (!data.nodes.length) return;
+      const xs = data.nodes.map(n => n.x);
+      const ys = data.nodes.map(n => n.y);
+      const minX = Math.min(...xs), maxX = Math.max(...xs);
+      const minY = Math.min(...ys), maxY = Math.max(...ys);
+      const spanX = Math.max(maxX - minX, 1e-6);
+      const spanY = Math.max(maxY - minY, 1e-6);
+      const pad = 64;
+      const box = svg.viewBox.baseVal;
+      for (const n of data.nodes) {
+        n.x = pad + (n.x - minX) / spanX * Math.max(box.width - pad * 2, 1);
+        n.y = pad + (n.y - minY) / spanY * Math.max(box.height - pad * 2, 1);
+      }
+    }
+
+    function render() {
+      viewport.style.setProperty("--edge-color", data.edgeColor);
+      for (const edge of data.edges) {
+        const s = nodeMap.get(edge.source), t = nodeMap.get(edge.target);
+        if (!s || !t) continue;
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.classList.add("edge");
+        line.dataset.source = edge.source;
+        line.dataset.target = edge.target;
+        line.setAttribute("stroke", edge.color);
+        line.setAttribute("stroke-width", edge.width);
+        if (data.directed) line.setAttribute("marker-end", "url(#arrow)");
+        viewport.appendChild(line);
+        if (edge.label) {
+          const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          label.classList.add("edge-label");
+          label.textContent = edge.label;
+          label.dataset.source = edge.source;
+          label.dataset.target = edge.target;
+          viewport.appendChild(label);
+        }
+      }
+      for (const node of data.nodes) {
+        const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        group.dataset.id = node.id;
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.classList.add("node");
+        circle.setAttribute("r", Math.max(20, Math.min(38, 12 + String(node.label).length * 3)));
+        circle.setAttribute("fill", node.color);
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.classList.add("node-label");
+        label.textContent = node.label;
+        group.append(circle, label);
+        viewport.appendChild(group);
+        enableNodeDrag(group, node);
+      }
+      updateGraph();
+    }
+
+    function enableNodeDrag(group, node) {
+      group.addEventListener("pointerdown", event => {
+        event.stopPropagation();
+        const start = screenToWorld(event.clientX, event.clientY);
+        const drag = { x: start.x, y: start.y, nx: node.x, ny: node.y };
+        group.setPointerCapture(event.pointerId);
+        const move = e => {
+          const p = screenToWorld(e.clientX, e.clientY);
+          node.x = drag.nx + p.x - drag.x;
+          node.y = drag.ny + p.y - drag.y;
+          updateGraph();
+        };
+        const up = () => {
+          group.removeEventListener("pointermove", move);
+          group.removeEventListener("pointerup", up);
+        };
+        group.addEventListener("pointermove", move);
+        group.addEventListener("pointerup", up);
+      });
+    }
+
+    function updateGraph() {
+      viewport.querySelectorAll(".edge").forEach(line => {
+        const s = nodeMap.get(line.dataset.source), t = nodeMap.get(line.dataset.target);
+        line.setAttribute("x1", s.x);
+        line.setAttribute("y1", s.y);
+        line.setAttribute("x2", t.x);
+        line.setAttribute("y2", t.y);
+      });
+      viewport.querySelectorAll(".edge-label").forEach(label => {
+        const s = nodeMap.get(label.dataset.source), t = nodeMap.get(label.dataset.target);
+        label.setAttribute("x", (s.x + t.x) / 2);
+        label.setAttribute("y", (s.y + t.y) / 2);
+      });
+      viewport.querySelectorAll("g[data-id]").forEach(group => {
+        const n = nodeMap.get(group.dataset.id);
+        group.setAttribute("transform", `translate(${n.x},${n.y})`);
+      });
+    }
+
+    function fit() {
+      state.scale = 1;
+      state.tx = 0;
+      state.ty = 0;
+      applyTransform();
+    }
+    function applyTransform() {
+      viewport.setAttribute("transform", `translate(${state.tx},${state.ty}) scale(${state.scale})`);
+    }
+    function screenToWorld(x, y) {
+      const pt = svg.createSVGPoint();
+      pt.x = x; pt.y = y;
+      const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+      return { x: (p.x - state.tx) / state.scale, y: (p.y - state.ty) / state.scale };
+    }
+    function worldToScreen(x, y) {
+      const pt = svg.createSVGPoint();
+      pt.x = x * state.scale + state.tx;
+      pt.y = y * state.scale + state.ty;
+      return pt.matrixTransform(svg.getScreenCTM());
+    }
+  </script>
+</body>
+</html>

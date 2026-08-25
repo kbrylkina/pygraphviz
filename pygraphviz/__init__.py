@@ -18,6 +18,8 @@ from .io import (
     to_json, from_json, save_json, load_json,
     to_edge_list, from_edge_list,
     to_adjacency_matrix, from_adjacency_matrix,
+    to_html, save_html,
+    to_svg, save_svg,
 )
 
 __version__ = "0.1.0"

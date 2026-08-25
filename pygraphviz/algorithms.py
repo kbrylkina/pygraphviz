@@ -86,7 +86,7 @@ def dijkstra(graph, start):
             continue
         visited.add(node)
 
-        for neighbor, edge in graph._adj.get(node, []):
+        for neighbor, edge in graph.adj(node):
             weight = edge.weight
             new_dist = d + weight
             if neighbor not in dist or new_dist < dist[neighbor]:
@@ -300,7 +300,7 @@ def prim_mst(graph, start=None):
     heap = []
     counter = _count()
 
-    for neighbor, edge in graph._adj.get(start, []):
+    for neighbor, edge in graph.adj(start):
         heapq.heappush(heap, (edge.weight, next(counter), edge))
 
     mst_edges = []
@@ -315,7 +315,7 @@ def prim_mst(graph, start=None):
         mst_edges.append(edge)
         total_weight += edge.weight
 
-        for neighbor, e in graph._adj.get(new_node, []):
+        for neighbor, e in graph.adj(new_node):
             if neighbor not in visited:
                 heapq.heappush(heap, (e.weight, next(counter), e))
 

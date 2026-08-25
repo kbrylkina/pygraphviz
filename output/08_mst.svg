@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 640" width="960" height="640" role="img" aria-label="MST (Kruskal, вес=16.0)">
+  <title>MST (Kruskal, вес=16.0)</title>
+  <rect width="100%" height="100%" fill="#ffffff"></rect>
+  <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#888888"></path></marker></defs>
+  <line x1="773.0" y1="576.0" x2="896.0" y2="172.8" stroke="#27AE60" stroke-width="3.0"></line>
+  <text x="834.5" y="374.4" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#24313a" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">4</text>
+  <line x1="773.0" y1="576.0" x2="663.0" y2="317.7" stroke="#27AE60" stroke-width="3.0"></line>
+  <text x="718.0" y="446.9" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#24313a" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">2</text>
+  <line x1="773.0" y1="576.0" x2="357.5" y2="403.8" stroke="#888888" stroke-width="1.8"></line>
+  <text x="565.2" y="489.9" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#24313a" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">9</text>
+  <line x1="896.0" y1="172.8" x2="663.0" y2="317.7" stroke="#888888" stroke-width="1.8"></line>
+  <text x="779.5" y="245.3" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#24313a" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">5</text>
+  <line x1="896.0" y1="172.8" x2="461.2" y2="64.0" stroke="#888888" stroke-width="1.8"></line>
+  <text x="678.6" y="118.4" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#24313a" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">10</text>
+  <line x1="663.0" y1="317.7" x2="461.2" y2="64.0" stroke="#27AE60" stroke-width="3.0"></line>
+  <text x="562.1" y="190.9" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#24313a" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">3</text>
+  <line x1="663.0" y1="317.7" x2="357.5" y2="403.8" stroke="#888888" stroke-width="1.8"></line>
+  <text x="510.3" y="360.8" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#24313a" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">8</text>
+  <line x1="461.2" y1="64.0" x2="64.0" y2="119.8" stroke="#27AE60" stroke-width="3.0"></line>
+  <text x="262.6" y="91.9" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#24313a" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">5</text>
+  <line x1="461.2" y1="64.0" x2="357.5" y2="403.8" stroke="#888888" stroke-width="1.8"></line>
+  <text x="409.3" y="233.9" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#24313a" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">6</text>
+  <line x1="64.0" y1="119.8" x2="357.5" y2="403.8" stroke="#27AE60" stroke-width="3.0"></line>
+  <text x="210.7" y="261.8" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#24313a" paint-order="stroke" stroke="#ffffff" stroke-width="4" stroke-linejoin="round">2</text>
+  <circle cx="773.0" cy="576.0" r="20" fill="#27AE60" stroke="#ffffff" stroke-width="2.5"></circle>
+  <text x="773.0" y="576.0" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="700" fill="#ffffff">A</text>
+  <circle cx="896.0" cy="172.8" r="20" fill="#27AE60" stroke="#ffffff" stroke-width="2.5"></circle>
+  <text x="896.0" y="172.8" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="700" fill="#ffffff">B</text>
+  <circle cx="663.0" cy="317.7" r="20" fill="#27AE60" stroke="#ffffff" stroke-width="2.5"></circle>
+  <text x="663.0" y="317.7" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="700" fill="#ffffff">C</text>
+  <circle cx="357.5" cy="403.8" r="20" fill="#27AE60" stroke="#ffffff" stroke-width="2.5"></circle>
+  <text x="357.5" y="403.8" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="700" fill="#ffffff">F</text>
+  <circle cx="461.2" cy="64.0" r="20" fill="#27AE60" stroke="#ffffff" stroke-width="2.5"></circle>
+  <text x="461.2" y="64.0" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="700" fill="#ffffff">D</text>
+  <circle cx="64.0" cy="119.8" r="20" fill="#27AE60" stroke="#ffffff" stroke-width="2.5"></circle>
+  <text x="64.0" y="119.8" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="700" fill="#ffffff">E</text>
+</svg>
